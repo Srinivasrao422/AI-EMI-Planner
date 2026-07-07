@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* ====================================================
+   CSS VARIABLES DEFINITION (LIGHT & DARK THEMES)
+   ==================================================== */
+:root {
+    --background: #F8FAFC;
+    --sidebar: #FFFFFF;
+    --card: #FFFFFF;
+    --primary: #2563EB;
+    --primary-hover: #1D4ED8;
+    --text: #111827;
+    --muted: #64748B;
+    --border: #E2E8F0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --bg-gradient: radial-gradient(at 50% 0%, #EFF6FF 0%, #F8FAFC 70%);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #0F172A;
+        --sidebar: #111827;
+        --card: #1E293B;
+        --primary: #2563EB;
+        --primary-hover: #3B82F6;
+        --text: #F8FAFC;
+        --muted: #94A3B8;
+        --border: #334155;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        --bg-gradient: radial-gradient(at 50% 0%, #1E1B4B 0%, #0F172A 70%);
+    }
+}
+
+/* ====================================================
+   GLOBAL STYLES & RESET
+   ==================================================== */
+body, .stApp {
+    background: var(--bg-gradient) !important;
+    color: var(--text) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+section[data-testid="stSidebar"] {
+    background-color: var(--sidebar) !important;
+    border-right: 1px solid var(--border) !important;
+}
+
+/* Force elements inside sidebar to use the sidebar-appropriate text colors */
+section[data-testid="stSidebar"] *, section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span {
+    color: var(--text) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* ====================================================
+   CARDS & CONTAINERS
+   ==================================================== */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--shadow) !important;
+    padding: 1.75rem !important;
+    margin-bottom: 1.25rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Form container */
+form[data-testid="stForm"] {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    padding: 2rem !important;
+    box-shadow: var(--shadow) !important;
+}
+
+/* ====================================================
+   CUSTOM PROFILE SIDEBAR & NAVIGATION REDESIGN
+   ==================================================== */
+div[data-testid="stSidebar"] a {
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border-left: 3px solid transparent !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    margin: 4px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: all 0.2s ease-in-out !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+}
+
+div[data-testid="stSidebar"] a:hover {
+    background-color: rgba(37, 99, 235, 0.08) !important;
+    color: var(--primary) !important;
+}
+
+/* Active navigation link indicator */
+div[data-testid="stSidebar"] a[aria-current="page"] {
+    background-color: rgba(37, 99, 235, 0.12) !important;
+    color: var(--primary) !important;
+    border-left: 3px solid var(--primary) !important;
+    font-weight: 600 !important;
+}
+
+/* ====================================================
+   BUTTON SYSTEM
+   ==================================================== */
+.stButton > button {
+    min-height: 44px;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    border: 1px solid var(--border) !important;
+    background-color: var(--card) !important;
+    color: var(--text) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.stButton > button:hover {
+    background-color: rgba(100, 116, 139, 0.05) !important;
+    border-color: var(--muted) !important;
+    transform: translateY(-1px) !important;
+}
+
+.stButton > button[kind="primary"] {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #FFFFFF !important;
+}
+
+.stButton > button[kind="primary"]:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* ====================================================
+   METRIC DESIGN
+   ==================================================== */
+div[data-testid="stMetricValue"] {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 1.8rem !important;
+    color: var(--text) !important;
+}
+
+div[data-testid="stMetricLabel"] p {
+    color: var(--muted) !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+/* ====================================================
+   FORMS & INPUTS
+   ==================================================== */
+.stTextInput input, .stNumberInput input, .stSelectbox select {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    color: var(--text) !important;
+    padding: 0.5rem 0.75rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.stTextInput input:focus, .stNumberInput input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* ====================================================
+   TABLES & DATAFRAMES
+   ==================================================== */
+div[data-testid="stTable"], div[data-testid="stDataFrame"] {
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+}
+
+table {
+    background-color: var(--card) !important;
+    color: var(--text) !important;
+}
+
+/* ====================================================
+   CHAT & AI MESSAGES
+   ==================================================== */
+div[data-testid="stChatMessage"] {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 12px !important;
+    padding: 1.2rem !important;
+    margin-bottom: 0.75rem !important;
+    box-shadow: var(--shadow) !important;
+}
+
+div[data-testid="stChatMessageUser"] {
+    background-color: rgba(37, 99, 235, 0.05) !important;
+    border-color: rgba(37, 99, 235, 0.15) !important;
+}
+
+div[data-testid="stChatMessage"] p {
+    color: var(--text) !important;
+}
+
+/* ====================================================
+   HERO / BANNER LAYOUTS
+   ==================================================== */
+.app-hero {
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow) !important;
+    padding: 3rem !important;
+    color: #FFFFFF !important;
+    margin-bottom: 2rem !important;
+}
+
+.app-hero h1 {
+    color: #FFFFFF !important;
+    font-weight: 700;
+}
+
+.app-hero__copy {
+    color: #CBD5E1 !important;
+}
