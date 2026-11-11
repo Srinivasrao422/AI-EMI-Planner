@@ -14,7 +14,7 @@ from utils.state_manager import get_financial_data
 from utils.auth_helper import require_login
 
 st.set_page_config(
-    page_title="Loan Comparison | AI Powered EMI Planner",
+    page_title="Loan Comparison | MSME Credit & Financial Risk Platform",
     layout="wide",
 )
 
