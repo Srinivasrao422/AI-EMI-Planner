@@ -106,6 +106,35 @@ def create_tables():
 
             cursor.execute(
                 """
+                CREATE TABLE IF NOT EXISTS financial_records (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    business_id INTEGER NOT NULL,
+                    period_month TEXT NOT NULL,
+                    revenue REAL NOT NULL DEFAULT 0 CHECK (revenue >= 0),
+                    other_income REAL NOT NULL DEFAULT 0 CHECK (other_income >= 0),
+                    cost_of_goods_sold REAL NOT NULL DEFAULT 0 CHECK (cost_of_goods_sold >= 0),
+                    operating_expenses REAL NOT NULL DEFAULT 0 CHECK (operating_expenses >= 0),
+                    owner_drawings REAL NOT NULL DEFAULT 0 CHECK (owner_drawings >= 0),
+                    existing_debt_service REAL NOT NULL DEFAULT 0 CHECK (existing_debt_service >= 0),
+                    notes TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE (business_id, period_month),
+                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                    FOREIGN KEY (business_id) REFERENCES business_profiles (id) ON DELETE CASCADE
+                )
+                """
+            )
+            cursor.execute(
+                """
+                CREATE INDEX IF NOT EXISTS idx_financial_records_user_business
+                ON financial_records(user_id, business_id, period_month)
+                """
+            )
+
+            cursor.execute(
+                """
                 CREATE TABLE IF NOT EXISTS loan_history (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER,
