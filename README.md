@@ -1,7 +1,18 @@
-# AI Powered EMI Planner
+# AI-Powered MSME Credit Assessment & Financial Risk Analysis Platform
 
-A Streamlit-based FinTech dashboard for EMI calculation, repayment planning,
-loan comparison, affordability review, and AI-style financial guidance.
+A Streamlit-based MSME financial decision-support platform. Current capabilities include multi-business profile management, EMI and repayment planning, loan comparison, affordability review, risk indicators, and AI-assisted financial guidance.
+
+The MSME Financial Resilience Twin, business cash-flow records, and advanced credit assessment workflows are planned additions; they are not yet implemented.
+
+## Current scope
+
+- MSME business profiles: multiple profiles per user, with ownership checks.
+- EMI calculator and repayment schedule.
+- Loan comparison and rule-based affordability/risk review.
+- AI-assisted financial guidance.
+- Existing loan history.
+
+Risk outputs are decision-support indicators, not a bank credit decision or loan approval.
 
 ## Architecture
 
