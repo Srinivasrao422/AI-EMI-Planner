@@ -10,6 +10,7 @@ import streamlit as st
 
 from components.theme import load_theme
 from core.msme_credit_assessment import assess_credit_readiness
+from core.credit_readiness_report import build_credit_readiness_pdf
 from database.business_profiles import get_user_business_profiles
 from database.financial_records import get_business_financial_records
 from utils.auth_helper import require_login
@@ -127,7 +128,29 @@ if require_login():
         )
         st.write(result["limitations"])
 
+    st.divider()
+    st.subheader("Download credit intelligence report")
+    st.caption("The PDF contains the figures and findings shown above. It does not add an AI-generated score or make a lending decision.")
+    try:
+        report_bytes = build_credit_readiness_pdf(
+            options[selected].__str__() and selected.split(" — ")[0],
+            result,
+        )
+        st.download_button(
+            "Download MSME Credit Readiness Report (PDF)",
+            data=report_bytes,
+            file_name="msme_credit_readiness_report.pdf",
+            mime="application/pdf",
+            type="primary",
+            use_container_width=True,
+        )
+    except (ValueError, KeyError, TypeError) as error:
+        st.error("The report could not be generated from this assessment: " + str(error))
+
     st.caption(
+        "For planning and information only. Confirm records and consult a qualified "
+        "financial professional or lender before making borrowing decisions."
+    )    st.caption(
         "For planning and information only. Confirm records and consult a qualified "
         "financial professional or lender before making borrowing decisions."
     )
