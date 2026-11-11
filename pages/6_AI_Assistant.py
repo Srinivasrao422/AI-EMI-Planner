@@ -20,7 +20,7 @@ from utils.auth_helper import require_login
 from database.loan_history import get_latest_loan
 
 st.set_page_config(
-    page_title="AI Assistant | AI Powered EMI Planner",
+    page_title="AI Financial Assistant | MSME Credit & Financial Risk Platform",
     layout="wide",
 )
 
