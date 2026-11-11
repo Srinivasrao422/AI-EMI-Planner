@@ -2,11 +2,13 @@
 
 A Streamlit-based MSME financial decision-support platform. Current capabilities include multi-business profile management, EMI and repayment planning, loan comparison, affordability review, risk indicators, and AI-assisted financial guidance.
 
-The MSME Financial Resilience Twin, business cash-flow records, and advanced credit assessment workflows are planned additions; they are not yet implemented.
+The MSME Financial Resilience Twin, detailed cash-flow timing records, and advanced credit assessment workflows are planned additions; they are not yet implemented.
 
 ## Current scope
 
 - MSME business profiles: multiple profiles per user, with ownership checks.
+- Monthly financial records: one record per business per month, with revenue, other income, direct costs, operating expenses, owner drawings and existing debt service.
+- Transparent monthly operating-surplus and cash-headroom calculations.
 - EMI calculator and repayment schedule.
 - Loan comparison and rule-based affordability/risk review.
 - AI-assisted financial guidance.
