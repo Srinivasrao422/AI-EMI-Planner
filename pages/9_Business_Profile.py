@@ -17,7 +17,7 @@ from database.business_profiles import (
 from utils.auth_helper import require_login
 
 
-st.set_page_config(page_title="Business Profile | MSME Financial Platform", layout="wide")
+st.set_page_config(page_title="MSME Business Profiles | MSME Credit & Financial Risk Platform", layout="wide")
 load_theme()
 create_tables()
 
