@@ -1,31 +1,27 @@
+"""Application entry point.
+
+Unauthenticated visitors see the login/register screen.
+Authenticated users are sent directly to the MSME dashboard.
+"""
+
 import streamlit as st
-from utils.state_manager import init_state
-from components.page_shell import render_page_header
+
 from components.theme import load_theme
 from database.models import create_tables
 from utils.auth_helper import require_login
+from utils.state_manager import init_state
+
 
 st.set_page_config(
     page_title="MSME Credit & Financial Risk Platform",
     layout="wide",
 )
+
 init_state()
 create_tables()
 load_theme()
 
-# Protect page and render custom sidebar navigation if authenticated
 if require_login():
-    render_page_header(
-        f"Welcome back, {st.session_state.username}! 👋",
-        "Your MSME financial workspace is ready. Manage business profiles, plan loans, and review financial risk.",
-    )
-
-    st.divider()
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.page_link("pages/1_Home.py", label="🏠 Open Dashboard", use_container_width=True)
-    with col2:
-        st.page_link("pages/2_EMI_Calculator.py", label="💰 Calculate EMI", use_container_width=True)
-    with col3:
-        st.page_link("pages/5_Risk_Analysis.py", label="📊 Review Risk", use_container_width=True)
+    # The dashboard is the authenticated landing page.
+    # Avoid showing a redundant welcome/intermediate screen after login.
+    st.switch_page("pages/1_Home.py")
