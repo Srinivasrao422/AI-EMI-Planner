@@ -20,4 +20,4 @@ jobs:
           python-version: "3.11"
       - name: Run database and MSME regression tests
         run: |
-          python -m unittest -v test_database_migrations test_business_profiles test_financial_records
+          python -m unittest -v test_database_migrations test_business_profiles test_financial_records test_financial_health
