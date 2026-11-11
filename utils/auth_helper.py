@@ -23,8 +23,8 @@ def render_auth_pages():
         """
         <div style="max-width: 440px; margin: 3rem auto; padding: 2.5rem; background-color: var(--card); border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border);">
             <div style="text-align: center; margin-bottom: 2rem;">
-                <h1 style="color: var(--text); font-size: 2rem; font-weight: 700; margin: 0; font-family: 'Outfit', sans-serif;">AI EMI Planner</h1>
-                <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem;">Secure Financial Dashboard Portal</p>
+                <h1 style="color: var(--text); font-size: 2rem; font-weight: 700; margin: 0; font-family: 'Outfit', sans-serif;">MSME Financial Platform</h1>
+                <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem;">Business Credit & Financial Risk Workspace</p>
             </div>
         """,
         unsafe_allow_html=True
@@ -117,7 +117,8 @@ def render_custom_sidebar():
             st.page_link("pages/4_Comparison.py", label="Comparison")
             st.page_link("pages/5_Risk_Analysis.py", label="Risk Analysis")
             st.page_link("pages/6_AI_Assistant.py", label="AI Assistant")
-            st.page_link("pages/8_History.py", label="History")
+            st.page_link("pages/8_History.py", label="Loan History")
+            st.page_link("pages/9_Business_Profile.py", label="MSME Business Profiles")
             
             st.divider()
             
