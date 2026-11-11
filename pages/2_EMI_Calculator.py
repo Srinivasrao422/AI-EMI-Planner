@@ -23,7 +23,7 @@ from utils.auth_helper import require_login
 from database.loan_history import save_loan
 
 st.set_page_config(
-    page_title="EMI Calculator | AI Powered EMI Planner",
+    page_title="EMI Calculator | MSME Credit & Financial Risk Platform",
     layout="wide",
 )
 
