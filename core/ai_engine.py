@@ -12,13 +12,31 @@ from groq import Groq
 load_dotenv()
 
 
+def _get_groq_api_key():
+    """Read the API key from environment variables or Streamlit secrets."""
+    api_key = os.getenv("GROQ_API_KEY", "").strip()
+    if api_key:
+        return api_key
+
+    # Streamlit Cloud/local secrets are an alternative to a local .env file.
+    try:
+        import streamlit as st
+        api_key = str(st.secrets.get("GROQ_API_KEY", "")).strip()
+        if api_key:
+            return api_key
+    except Exception:
+        # Missing secrets.toml is expected during local development.
+        pass
+    return ""
+
+
 def get_groq_client():
     """Return a Groq client when a non-placeholder API key is configured."""
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key or not api_key.strip() or api_key.strip().lower().startswith("your_"):
+    api_key = _get_groq_api_key()
+    if not api_key or api_key.lower().startswith(("your_", "gsk_your")):
         return None
     try:
-        return Groq(api_key=api_key.strip())
+        return Groq(api_key=api_key)
     except Exception:
         return None
 
