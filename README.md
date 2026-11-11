@@ -2,7 +2,7 @@
 
 A Streamlit-based MSME financial decision-support platform. Current capabilities include multi-business profile management, EMI and repayment planning, loan comparison, affordability review, risk indicators, and AI-assisted financial guidance.
 
-The MSME Financial Resilience Twin, detailed cash-flow timing records, and advanced credit assessment workflows are planned additions; they are not yet implemented.
+The platform includes a Financial Resilience Twin, cash-flow outlook, MSME loan optimizer and review-first bank statement analysis. Bank statement categorisation is rule-based and must be reviewed by the user.
 
 ## Current scope
 
@@ -12,7 +12,7 @@ The MSME Financial Resilience Twin, detailed cash-flow timing records, and advan
 - EMI calculator and repayment schedule.
 - Loan comparison and rule-based affordability/risk review.
 - AI-assisted financial guidance.
-- Existing loan history.
+- Existing loan history.\n- Bank statement CSV analysis with mapped columns, deterministic keyword categories, manual review and downloadable reconciled transaction data.\n- Text extraction from selectable-text PDFs for inspection; scanned PDF OCR and automatic PDF table parsing are not supported.
 
 Risk outputs are decision-support indicators, not a bank credit decision or loan approval.
 
