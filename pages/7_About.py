@@ -13,7 +13,7 @@ from components.theme import load_theme
 
 
 st.set_page_config(
-    page_title="About | AI Powered EMI Planner",
+    page_title="About | MSME Credit & Financial Risk Platform",
     layout="wide",
 )
 
@@ -21,7 +21,7 @@ load_theme()
 
 render_page_header(
     "About",
-    "A Streamlit dashboard for EMI planning, repayment analysis, and financial risk review.",
+    "An MSME-focused financial workspace for business profiles, loan planning, repayment analysis and decision-support risk review.",
 )
 
 col1, col2 = st.columns(2)
@@ -29,10 +29,10 @@ col1, col2 = st.columns(2)
 with col1:
     with st.container(border=True):
         st.subheader("Product Scope")
-        st.caption("EMI calculation")
+        st.caption("MSME business profile management")
         st.caption("Repayment schedule generation")
         st.caption("Loan comparison")
-        st.caption("Risk and affordability review")
+        st.caption("Loan affordability and risk review")
         st.caption("AI-style recommendations panel")
 
 with col2:
