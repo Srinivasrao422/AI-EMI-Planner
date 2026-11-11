@@ -9,8 +9,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from components.theme import load_theme
-from core.bank_statement import extract_pdf_text, normalise_transactions, read_csv_statement
-from database.business_profiles import get_user_business_profiles
+from core.bank_statement import (\n    build_monthly_reconciliation, extract_pdf_text, normalise_transactions, read_csv_statement,\n)
+from database.business_profiles import get_user_business_profiles\nfrom database.financial_records import save_business_financial_record
 from utils.auth_helper import require_login
 
 
@@ -123,7 +123,7 @@ if require_login():
                             "Category": st.column_config.SelectboxColumn(options=[
                                 "Sales / customer receipts", "Supplier / inventory", "Rent",
                                 "Utilities", "Loan / EMI", "Bank charges", "Taxes",
-                                "Cash withdrawal", "Uncategorised", "Other",
+                                "Cash withdrawal", "Owner drawings", "Other income", "Other operating expense", "Uncategorised", "Other",
                             ]),
                         },
                         key="bank_statement_editor",
@@ -146,10 +146,52 @@ if require_login():
                         mime="text/csv",
                         use_container_width=True,
                     )
-                    st.info(
-                        "This first release does not write bank transactions into your financial records. "
-                        "Use the reviewed CSV as a reconciliation aid; manually confirm monthly figures before saving them."
+                    st.divider()
+                    st.subheader("Step 3 · Draft monthly financial record")
+                    st.caption(
+                        "Choose the reporting month. Only the reviewed categories below are mapped; "
+                        "uncategorised transactions are excluded. Check the draft before saving."
                     )
+                    available_months = sorted(pd.to_datetime(edited["Date"], errors="coerce").dropna().dt.strftime("%Y-%m").unique().tolist())
+                    chosen_month = st.selectbox("Reporting month to reconcile", available_months, key="bank_reconcile_month")
+                    try:
+                        draft = build_monthly_reconciliation(edited, chosen_month)
+                        st.write("**Proposed figures (INR)**")
+                        left, right = st.columns(2)
+                        with left:
+                            st.metric("Sales / revenue", f"₹{draft['revenue']:,.2f}")
+                            st.metric("Other income", f"₹{draft['other_income']:,.2f}")
+                            st.metric("Direct supplier costs", f"₹{draft['cost_of_goods_sold']:,.2f}")
+                        with right:
+                            st.metric("Operating expenses", f"₹{draft['operating_expenses']:,.2f}")
+                            st.metric("Owner drawings", f"₹{draft['owner_drawings']:,.2f}")
+                            st.metric("Existing loan payments", f"₹{draft['existing_debt_service']:,.2f}")
+                        st.caption(
+                            f"{draft['transaction_count']} transactions in {chosen_month}; "
+                            f"{draft['uncategorised_count']} uncategorised/unmapped transactions excluded."
+                        )
+                        if draft["uncategorised_count"]:
+                            st.warning("Categorise or intentionally leave the remaining transactions excluded before saving.")
+                        confirm = st.checkbox(
+                            "I reviewed these transactions and confirm this draft represents the selected business month.",
+                            key="bank_reconcile_confirm",
+                        )
+                        if st.button(
+                            "Save reviewed figures to Monthly Financial Records",
+                            type="primary",
+                            disabled=not confirm,
+                            use_container_width=True,
+                        ):
+                            save_business_financial_record(
+                                st.session_state.user_id,
+                                business_options[selected_business],
+                                draft,
+                            )
+                            st.success(
+                                f"Monthly figures for {chosen_month} saved. If a record already existed for this month, it was updated."
+                            )
+                    except ValueError as exc:
+                        st.warning(str(exc))
             except ValueError as exc:
                 st.error(str(exc))
 
