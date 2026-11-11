@@ -34,7 +34,7 @@ class LoanOptimizerTests(unittest.TestCase):
         self.assertEqual(result["estimated_monthly_emi_capacity"], 0)
 
     def test_zero_interest_reverse_principal(self):
-        self.assertEqual(420000, maximum_principal_for_emi(10000, 0, 3))
+        self.assertEqual(360000, maximum_principal_for_emi(10000, 0, 3))
 
     def test_reverse_principal_round_trips_to_emi_capacity(self):
         principal = maximum_principal_for_emi(15000, 12, 5)
