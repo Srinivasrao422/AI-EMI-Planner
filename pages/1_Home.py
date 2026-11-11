@@ -197,31 +197,44 @@ if require_login():
 
     st.divider()
 
-    # Task-oriented navigation; no decorative AI-generated summaries.
+    # Core financial tools are kept in the dashboard workspace, not the sidebar.
     _render_section_heading(
-        "Workspace",
-        "Open the tool for the task you want to complete.",
+        "Financial workspace",
+        "Choose a tool. These four loan-planning tools are available here to keep navigation compact.",
     )
-    action_rows = [
-        [
-            ("Record monthly finances", "pages/10_Financial_Records.py"),
-            ("Review financial health", "pages/11_Financial_Health.py"),
-            ("Stress-test cash resilience", "pages/12_Resilience_Twin.py"),
-        ],
-        [
-            ("Calculate EMI", "pages/2_EMI_Calculator.py"),
-            ("Compare loan options", "pages/4_Comparison.py"),
-            ("View loan history", "pages/8_History.py"),
-        ],
-        [
-            ("Manage business profiles", "pages/9_Business_Profile.py"),
-            ("Repayment schedule", "pages/3_Repayment.py"),
-            ("Risk analysis", "pages/5_Risk_Analysis.py"),
-        ],
+    core_tools = [
+        ("EMI Calculator", "Calculate a loan's monthly instalment and total interest.", "pages/2_EMI_Calculator.py"),
+        ("Repayment Schedule", "Review the month-by-month principal and interest schedule.", "pages/3_Repayment.py"),
+        ("Loan Comparison", "Compare loan options, rates and repayment tenures.", "pages/4_Comparison.py"),
+        ("Risk Analysis", "Review transparent affordability and risk indicators.", "pages/5_Risk_Analysis.py"),
     ]
-    for row in action_rows:
-        cols = st.columns(3)
-        for col, (label, target) in zip(cols, row):
+    for row_start in range(0, len(core_tools), 2):
+        cols = st.columns(2)
+        for col, (label, description, target) in zip(cols, core_tools[row_start:row_start + 2]):
+            with col:
+                with st.container(border=True):
+                    st.markdown(f"**{label}**")
+                    st.caption(description)
+                    st.page_link(target, label=f"Open {label}", use_container_width=True)
+
+    st.divider()
+    _render_section_heading(
+        "MSME business tools",
+        "Manage recorded business information and inspect cash resilience.",
+    )
+    business_tools = [
+        ("Business profiles", "pages/9_Business_Profile.py"),
+        ("Monthly financial records", "pages/10_Financial_Records.py"),
+        ("Financial health", "pages/11_Financial_Health.py"),
+        ("Financial Resilience Twin", "pages/12_Resilience_Twin.py"),
+        ("Cash Flow Outlook", "pages/13_Cash_Flow_Outlook.py"),
+        ("MSME Loan Optimizer", "pages/14_Loan_Optimizer.py"),
+        ("Loan history", "pages/8_History.py"),
+        ("AI Assistant", "pages/6_AI_Assistant.py"),
+    ]
+    for row_start in range(0, len(business_tools), 4):
+        cols = st.columns(4)
+        for col, (label, target) in zip(cols, business_tools[row_start:row_start + 4]):
             with col:
                 st.page_link(target, label=label, use_container_width=True)
 
