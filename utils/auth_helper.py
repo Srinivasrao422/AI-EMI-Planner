@@ -1,7 +1,7 @@
 """
 =====================================================
 Authentication Helper & Sidebar Navigation
-Project : AI Powered EMI Planner
+Project : MSME Credit & Financial Risk Platform
 Purpose:
 Manage login/register screens, sidebar navigation and page protection
 =====================================================
@@ -87,7 +87,7 @@ def render_custom_sidebar():
         st.markdown(
             """
             <div style="padding: 0.5rem 0; margin-bottom: 1.5rem; text-align: left;">
-                <h2 style="color: var(--text); font-size: 1.4rem; font-weight: 700; margin: 0; font-family: 'Outfit', sans-serif;">AI EMI Planner</h2>
+                <h2 style="color: var(--text); font-size: 1.4rem; font-weight: 700; margin: 0; font-family: 'Outfit', sans-serif;">MSME Financial Platform</h2>
             </div>
             """,
             unsafe_allow_html=True
