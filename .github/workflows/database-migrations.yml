@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install test dependencies
+        run: python -m pip install pandas pypdf
       - name: Run database and MSME regression tests
         run: |
           python -m unittest -v test_database_migrations test_business_profiles test_financial_records test_financial_health test_resilience_twin test_cash_flow test_loan_optimizer test_bank_statement
