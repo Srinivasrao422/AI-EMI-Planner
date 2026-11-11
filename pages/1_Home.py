@@ -231,6 +231,7 @@ if require_login():
         ("MSME Loan Optimizer", "pages/14_Loan_Optimizer.py"),
         ("Loan history", "pages/8_History.py"),
         ("AI Assistant", "pages/6_AI_Assistant.py"),
+        ("Bank Statement Intelligence", "pages/15_Bank_Statement.py"),
     ]
     for row_start in range(0, len(business_tools), 4):
         cols = st.columns(4)
