@@ -6,7 +6,7 @@ from database.models import create_tables
 from utils.auth_helper import require_login
 
 st.set_page_config(
-    page_title="AI Powered EMI Planner",
+    page_title="MSME Credit & Financial Risk Platform",
     layout="wide",
 )
 init_state()
@@ -17,7 +17,7 @@ load_theme()
 if require_login():
     render_page_header(
         f"Welcome back, {st.session_state.username}! 👋",
-        "Your AI-Powered EMI Planner Workspace is ready. Use the sidebar to navigate or choose an option below.",
+        "Your MSME financial workspace is ready. Manage business profiles, plan loans, and review financial risk.",
     )
 
     st.divider()
