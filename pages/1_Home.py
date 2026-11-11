@@ -1,186 +1,231 @@
 from pathlib import Path
 import sys
+
+import pandas as pd
 import streamlit as st
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-# ======================================
-# IMPORTS
-# ======================================
-from components.ai_card import show_ai_card
-from components.footer import show_footer
 from components.theme import load_theme
-from utils.state_manager import get_financial_data
+from database.business_profiles import get_user_business_profiles
+from database.financial_records import (
+    calculate_monthly_summary,
+    get_business_financial_records,
+)
+from database.loan_history import get_latest_loan, get_user_loans
 from utils.auth_helper import require_login
-from database.loan_history import get_user_loans, get_latest_loan
 
-# ======================================
-# PAGE CONFIG
-# ======================================
+
 st.set_page_config(
     page_title="Dashboard | MSME Credit & Financial Risk Platform",
     layout="wide",
 )
-
 load_theme()
 
-# Require Login and render sidebar
+
+def _inr(value):
+    return f"₹{float(value):,.0f}"
+
+
+def _render_section_heading(title, description=None):
+    st.subheader(title)
+    if description:
+        st.caption(description)
+
+
 if require_login():
-    username = st.session_state.username
     user_id = st.session_state.user_id
-    
-    # ======================================
-    # HERO SECTION
-    # ======================================
+    username = st.session_state.username
+
+    # Header
     st.markdown(
         """
         <div class="app-hero">
-            <h1 style="font-size: 2.5rem; margin: 0; font-family: 'Outfit', sans-serif;">MSME Credit & Financial Risk Platform</h1>
-            <p class="app-hero__copy" style="font-size: 1.1rem; margin-top: 0.5rem; margin-bottom: 1.5rem;">AI-powered business profiling, loan planning and financial risk insights</p>
+            <p style="margin:0 0 8px 0; color:#BFDBFE; font-size:0.78rem; font-weight:700; letter-spacing:0.12em;">
+                MSME FINANCIAL WORKSPACE
+            </p>
+            <h1 style="margin:0; font-size:2.15rem;">Business overview</h1>
+            <p class="app-hero__copy" style="margin:10px 0 0 0;">
+                A clear view of your recorded business finances, loan plans and cash resilience.
+            </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
-    
-    # CTA Buttons Row
-    cta_col1, cta_col2, cta_col3, _ = st.columns([1, 1, 1.4, 2.6])
-    with cta_col1:
-        st.page_link("pages/2_EMI_Calculator.py", label="Calculate EMI", use_container_width=True)
-    with cta_col2:
-        st.page_link("pages/8_History.py", label="View History", use_container_width=True)
-    with cta_col3:
-        st.page_link("pages/9_Business_Profile.py", label="Business Profiles", use_container_width=True)
 
-    st.page_link("pages/10_Financial_Records.py", label="Record Monthly Business Finances", use_container_width=True)
-    st.page_link("pages/11_Financial_Health.py", label="Analyze MSME Financial Health", use_container_width=True)
-    st.page_link("pages/12_Resilience_Twin.py", label="Open Financial Resilience Twin", use_container_width=True)
-
-    st.write("")
-    st.write("")
-
-    # ======================================
-    # FEATURE CARDS
-    # ======================================
-    st.subheader("MSME Platform Capabilities")
-    feat_col1, feat_col2, feat_col3, feat_col4 = st.columns(4)
-    with feat_col1:
-        with st.container(border=True):
-            st.markdown("**MSME Loan Planning**")
-            st.caption("Plan loan repayments with EMI calculations and amortization schedules.")
-    with feat_col2:
-        with st.container(border=True):
-            st.markdown("**Credit & Risk Review**")
-            st.caption("Review loan affordability indicators. Results are decision-support, not lender approval.")
-    with feat_col3:
-        with st.container(border=True):
-            st.markdown("**AI Financial Guidance**")
-            st.caption("Get AI-assisted explanations and general financial planning guidance.")
-    with feat_col4:
-        with st.container(border=True):
-            st.markdown("**Business Profile Management**")
-            st.caption("Create and manage multiple MSME business profiles under your account.")
-    with st.container(border=True):
-        st.markdown("**Monthly Financial Records**")
-        st.caption("Capture revenue, direct costs, operating expenses, owner drawings and existing debt payments by month.")
-
-    st.divider()
-
-    # Welcome header
-    st.markdown(f"<h2 style='margin-bottom: 0.25rem;'>Welcome back, {username}</h2>", unsafe_allow_html=True)
-    st.caption("Your active financial summary and advisor overview is loaded below.")
-    st.write("")
-
-    # Load active profile data (SQLite latest, fallback to state manager default)
+    profiles = get_user_business_profiles(user_id)
+    loans_df = get_user_loans(user_id)
     latest_loan = get_latest_loan(user_id)
-    active_data = get_financial_data()
-    
-    if latest_loan:
-        loan_amount = latest_loan["loan_amount"]
-        interest_rate = latest_loan["interest_rate"]
-        tenure = latest_loan["tenure"]
-        monthly_income = latest_loan["monthly_income"]
-        monthly_emi = latest_loan["monthly_emi"]
-        total_interest = latest_loan["total_interest"]
-        total_payment = latest_loan["total_payment"]
-        risk_level = latest_loan["risk_level"]
+
+    # Business selector and record-backed summary
+    if profiles:
+        profile_options = {
+            f"{item['business_name']} · {item['city']}, {item['state']}": item["id"]
+            for item in profiles
+        }
+        selected_label = st.selectbox(
+            "Business workspace",
+            list(profile_options),
+            help="Switch between businesses owned by your account.",
+        )
+        selected_business_id = profile_options[selected_label]
+        selected_profile = next(
+            item for item in profiles if item["id"] == selected_business_id
+        )
+        records = get_business_financial_records(user_id, selected_business_id)
     else:
-        loan_amount = active_data["loan_amount"]
-        interest_rate = active_data["interest_rate"]
-        tenure = active_data["tenure"]
-        monthly_income = active_data["monthly_income"]
-        monthly_emi = active_data["monthly_emi"]
-        total_interest = active_data["total_interest"]
-        total_payment = active_data["total_payment"]
-        risk_level = active_data["risk_level"]
+        selected_profile = None
+        records = []
+        st.info("No business profile has been created yet. Add one to unlock business financial insights.")
+        st.page_link(
+            "pages/9_Business_Profile.py",
+            label="Create your first business profile",
+            use_container_width=True,
+        )
 
-    # ======================================
-    # FINANCIAL DASHBOARD PREVIEW CARDS
-    # ======================================
-    st.subheader("Existing EMI Planning Snapshot")
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        with st.container(border=True):
-            st.metric("Total Loan", f"₹{loan_amount:,.2f}")
-    with col2:
-        with st.container(border=True):
-            st.metric("Monthly EMI", f"₹{monthly_emi:,.2f}")
-    with col3:
-        with st.container(border=True):
-            st.metric("Interest Rate", f"{interest_rate}%")
-    with col4:
-        with st.container(border=True):
-            st.metric("Risk Status", risk_level)
+    st.write("")
+    _render_section_heading(
+        "At a glance",
+        "Figures below come from your saved records. Missing data is shown as not recorded, never replaced with demo values.",
+    )
 
-    # ======================================
-    # FINANCIAL SUMMARY DETAILS
-    # ======================================
-    st.subheader("Financial Summary Details")
-    with st.container(border=True):
-        sc1, sc2, sc3 = st.columns(3)
-        with sc1:
-            st.write("**Principal Amount:**")
-            st.write(f"₹{loan_amount:,.2f}")
-        with sc2:
-            st.write("**Interest Payable:**")
-            st.write(f"₹{total_interest:,.2f}")
-        with sc3:
-            st.write("**Total Repayment:**")
-            st.write(f"₹{total_payment:,.2f}")
+    metric_cols = st.columns(4)
+    metric_cols[0].metric("Business profiles", len(profiles))
+    metric_cols[1].metric("Financial months recorded", len(records))
+    metric_cols[2].metric("Loan calculations", len(loans_df))
+    metric_cols[3].metric(
+        "Latest reporting month",
+        records[0]["period_month"] if records else "Not recorded",
+    )
 
     st.divider()
 
-    col_left, col_right = st.columns([3, 2])
+    # Actual monthly business position
+    _render_section_heading(
+        "Business financial position",
+        selected_profile["business_name"] if selected_profile else "Create a business profile to begin.",
+    )
 
-    with col_left:
-        # ======================================
-        # RECENT SQLITE CALCULATIONS
-        # ======================================
-        st.subheader("Recent Calculations")
-        user_loans_df = get_user_loans(user_id)
-        if not user_loans_df.empty:
-            recent_df = user_loans_df.head(5)[
-                ["loan_amount", "interest_rate", "tenure", "monthly_emi", "risk_level", "created_at"]
-            ].copy()
-            recent_df.columns = ["Loan Amount (₹)", "Rate (%)", "Tenure (Yrs)", "Monthly EMI (₹)", "Risk Level", "Date"]
-            st.dataframe(recent_df, use_container_width=True, hide_index=True)
+    if records:
+        latest = records[0]
+        summary = calculate_monthly_summary(latest)
+        total_income = summary["total_income"]
+        operating_surplus = summary["operating_surplus"]
+        cash_headroom = summary["cash_headroom"]
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Latest monthly income", _inr(total_income))
+        c2.metric("Operating surplus", _inr(operating_surplus))
+        c3.metric("Cash headroom", _inr(cash_headroom))
+
+        if cash_headroom < 0:
+            st.error(
+                "The latest recorded month has negative cash headroom after owner drawings and existing debt payments."
+            )
+        elif cash_headroom == 0:
+            st.warning("The latest recorded month is at cash-headroom break-even.")
         else:
-            st.info("No calculations stored yet. Use the EMI Calculator to get started!")
+            st.success("The latest recorded month has non-negative cash headroom.")
 
-        st.divider()
-        # Clean quick actions
-        st.subheader("Quick Navigation Actions")
-        qa_col1, qa_col2 = st.columns(2)
-        with qa_col1:
-            st.page_link("pages/3_Repayment.py", label="Detailed Repayment Schedule", use_container_width=True)
-        with qa_col2:
-            st.page_link("pages/4_Comparison.py", label="Compare Bank Offers", use_container_width=True)
+        # Trend chart only when there are at least two real monthly records.
+        if len(records) >= 2:
+            trend_rows = []
+            for record in reversed(records):
+                result = calculate_monthly_summary(record)
+                trend_rows.append(
+                    {
+                        "Month": record["period_month"],
+                        "Income": result["total_income"],
+                        "Cash headroom": result["cash_headroom"],
+                    }
+                )
+            trend_df = pd.DataFrame(trend_rows).set_index("Month")
+            _render_section_heading(
+                "Recorded monthly trend",
+                "Based on saved monthly records only. No projections or interpolated values are included.",
+            )
+            st.line_chart(trend_df, use_container_width=True)
+        else:
+            st.info(
+                "Add another reporting month to see a meaningful month-to-month financial trend."
+            )
 
-    with col_right:
-        # ======================================
-        # AI CARD
-        # ======================================
-        show_ai_card()
+        _render_section_heading("Recent business records")
+        table_rows = []
+        for record in records[:6]:
+            result = calculate_monthly_summary(record)
+            table_rows.append(
+                {
+                    "Month": record["period_month"],
+                    "Income": result["total_income"],
+                    "Operating surplus": result["operating_surplus"],
+                    "Cash headroom": result["cash_headroom"],
+                }
+            )
+        st.dataframe(
+            pd.DataFrame(table_rows),
+            use_container_width=True,
+            hide_index=True,
+        )
+    else:
+        st.info(
+            "No monthly financial records are available for this business. "
+            "Record actual figures to populate this dashboard."
+        )
 
-    show_footer()
+    st.divider()
+
+    # Loan snapshot uses only saved loan calculations.
+    _render_section_heading(
+        "Loan planning snapshot",
+        "Most recent saved EMI calculation for your account.",
+    )
+    if latest_loan:
+        loan_cols = st.columns(4)
+        loan_cols[0].metric("Loan amount", _inr(latest_loan["loan_amount"]))
+        loan_cols[1].metric("Monthly EMI", _inr(latest_loan["monthly_emi"]))
+        loan_cols[2].metric("Interest rate", f"{latest_loan['interest_rate']:.2f}%")
+        loan_cols[3].metric("Tenure", f"{latest_loan['tenure']} years")
+        st.caption(
+            f"Last saved: {latest_loan.get('created_at') or 'Date not available'} · "
+            f"Risk label stored with calculation: {latest_loan.get('risk_level') or 'Not recorded'}"
+        )
+    else:
+        st.info("No saved loan calculation yet. Your loan snapshot will appear after using the EMI Calculator.")
+
+    st.divider()
+
+    # Task-oriented navigation; no decorative AI-generated summaries.
+    _render_section_heading(
+        "Workspace",
+        "Open the tool for the task you want to complete.",
+    )
+    action_rows = [
+        [
+            ("Record monthly finances", "pages/10_Financial_Records.py"),
+            ("Review financial health", "pages/11_Financial_Health.py"),
+            ("Stress-test cash resilience", "pages/12_Resilience_Twin.py"),
+        ],
+        [
+            ("Calculate EMI", "pages/2_EMI_Calculator.py"),
+            ("Compare loan options", "pages/4_Comparison.py"),
+            ("View loan history", "pages/8_History.py"),
+        ],
+        [
+            ("Manage business profiles", "pages/9_Business_Profile.py"),
+            ("Repayment schedule", "pages/3_Repayment.py"),
+            ("Risk analysis", "pages/5_Risk_Analysis.py"),
+        ],
+    ]
+    for row in action_rows:
+        cols = st.columns(3)
+        for col, (label, target) in zip(cols, row):
+            with col:
+                st.page_link(target, label=label, use_container_width=True)
+
+    st.caption(
+        "Dashboard figures are descriptive summaries of information saved in this account. "
+        "They are not audited financial statements, credit scores, default predictions or lender decisions."
+    )
