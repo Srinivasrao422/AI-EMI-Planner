@@ -101,5 +101,5 @@ class FinancialRecordTests(unittest.TestCase):
         self.assertEqual(50000, summary["cash_headroom"])
 
 
-if __turn__ == "__main__":
+if __name__ == "__main__":
     unittest.main()
