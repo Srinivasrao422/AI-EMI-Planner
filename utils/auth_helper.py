@@ -222,6 +222,7 @@ def render_custom_sidebar():
             st.page_link("pages/13_Cash_Flow_Outlook.py", label="Cash Flow Outlook")
             st.page_link("pages/14_Loan_Optimizer.py", label="MSME Loan Optimizer")
             st.page_link("pages/15_Bank_Statement.py", label="Bank Statement Intelligence")
+            st.page_link("pages/16_Credit_Readiness.py", label="MSME Credit Readiness Review")
             st.divider()
 
             if st.button("Logout", use_container_width=True, key="logout_button"):
