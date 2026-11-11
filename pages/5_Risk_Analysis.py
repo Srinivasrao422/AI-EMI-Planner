@@ -21,7 +21,7 @@ from utils.auth_helper import require_login
 from database.loan_history import save_loan
 
 st.set_page_config(
-    page_title="Risk Analysis | AI Powered EMI Planner",
+    page_title="Risk Analysis | MSME Credit & Financial Risk Platform",
     layout="wide",
 )
 
