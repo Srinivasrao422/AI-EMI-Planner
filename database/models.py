@@ -78,6 +78,34 @@ def create_tables():
 
             cursor.execute(
                 """
+                CREATE TABLE IF NOT EXISTS business_profiles (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    business_name TEXT NOT NULL,
+                    business_type TEXT NOT NULL,
+                    industry TEXT NOT NULL,
+                    registration_type TEXT,
+                    registration_number TEXT,
+                    city TEXT NOT NULL,
+                    state TEXT NOT NULL,
+                    country TEXT NOT NULL DEFAULT 'India',
+                    started_year INTEGER,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id)
+                        REFERENCES users (id) ON DELETE CASCADE
+                )
+                """
+            )
+            cursor.execute(
+                """
+                CREATE INDEX IF NOT EXISTS idx_business_profiles_user_id
+                ON business_profiles(user_id)
+                """
+            )
+
+            cursor.execute(
+                """
                 CREATE TABLE IF NOT EXISTS loan_history (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER,
