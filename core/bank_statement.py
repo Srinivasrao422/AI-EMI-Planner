@@ -112,3 +112,70 @@ def extract_pdf_text(file_bytes: bytes) -> str:
     if not text.strip():
         raise ValueError("No selectable text found. This may be a scanned PDF; export it as CSV or OCR it first.")
     return text
+
+
+def build_monthly_reconciliation(transactions: pd.DataFrame, period_month: str) -> dict:
+    """Aggregate reviewed transactions into a draft monthly record.
+
+    Uncategorised transactions are deliberately excluded. The caller must
+    review category assignments and explicitly confirm before saving.
+    """
+    import re
+    from datetime import date
+
+    try:
+        parsed_month = date.fromisoformat(str(period_month).strip() + "-01")
+    except ValueError as exc:
+        raise ValueError("Reporting month must use YYYY-MM format.") from exc
+    month = parsed_month.strftime("%Y-%m")
+    if month != str(period_month).strip():
+        raise ValueError("Reporting month must use YYYY-MM format.")
+
+    required = {"Date", "Debit (INR)", "Credit (INR)", "Category"}
+    missing = required - set(transactions.columns)
+    if missing:
+        raise ValueError("Transaction table is missing: " + ", ".join(sorted(missing)))
+
+    dates = pd.to_datetime(transactions["Date"], errors="coerce")
+    selected = transactions.loc[dates.dt.strftime("%Y-%m") == month].copy()
+    if selected.empty:
+        raise ValueError("No reviewed transactions were found for the selected month.")
+
+    debit = pd.to_numeric(selected["Debit (INR)"], errors="coerce").fillna(0)
+    credit = pd.to_numeric(selected["Credit (INR)"], errors="coerce").fillna(0)
+    if (debit < 0).any() or (credit < 0).any():
+        raise ValueError("Debit and credit values must be non-negative.")
+
+    category = selected["Category"].astype(str)
+    sums = lambda mask, values: round(float(values[mask].sum()), 2)
+    sales = sums(category.eq("Sales / customer receipts"), credit)
+    other_income = sums(category.eq("Other income"), credit)
+    supplier = sums(category.eq("Supplier / inventory"), debit)
+    rent = sums(category.eq("Rent"), debit)
+    utilities = sums(category.eq("Utilities"), debit)
+    bank_charges = sums(category.eq("Bank charges"), debit)
+    taxes = sums(category.eq("Taxes"), debit)
+    other_expenses = sums(category.eq("Other operating expense"), debit)
+    owner_drawings = sums(category.eq("Owner drawings"), debit)
+    debt = sums(category.eq("Loan / EMI"), debit)
+
+    included_categories = {
+        "Sales / customer receipts", "Other income", "Supplier / inventory",
+        "Rent", "Utilities", "Bank charges", "Taxes",
+        "Other operating expense", "Owner drawings", "Loan / EMI",
+    }
+    ignored = int((~category.isin(included_categories)).sum())
+    return {
+        "period_month": month,
+        "revenue": sales,
+        "other_income": other_income,
+        "cost_of_goods_sold": supplier,
+        "operating_expenses": round(rent + utilities + bank_charges + taxes + other_expenses, 2),
+        "owner_drawings": owner_drawings,
+        "existing_debt_service": debt,
+        "notes": "Drafted from user-reviewed bank statement transactions. Verify cash, non-bank transactions and classifications.",
+        "transaction_count": int(len(selected)),
+        "uncategorised_count": ignored,
+        "included_debits": round(supplier + rent + utilities + bank_charges + taxes + other_expenses + owner_drawings + debt, 2),
+        "included_credits": round(sales + other_income, 2),
+    }
