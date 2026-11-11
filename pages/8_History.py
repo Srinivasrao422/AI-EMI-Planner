@@ -19,7 +19,7 @@ from utils.auth_helper import require_login
 from database.loan_history import get_user_loans, delete_loan
 
 st.set_page_config(
-    page_title="Loan History | AI Powered EMI Planner",
+    page_title="Loan History | MSME Credit & Financial Risk Platform",
     layout="wide",
 )
 
