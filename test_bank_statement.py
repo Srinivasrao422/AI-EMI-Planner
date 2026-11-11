@@ -1,7 +1,7 @@
 """Tests for deterministic bank-statement helpers."""
 import unittest
 import pandas as pd
-from core.bank_statement import categorise_description, normalise_transactions
+from core.bank_statement import (\n    build_monthly_reconciliation, categorise_description, normalise_transactions,\n)
 
 
 class BankStatementTests(unittest.TestCase):
@@ -34,6 +34,34 @@ class BankStatementTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             normalise_transactions(frame, {"date": "date", "description": "desc", "debit": "d", "credit": "c"})
 
+
+
+    def test_monthly_reconciliation_maps_reviewed_categories(self):
+        frame = pd.DataFrame({
+            "Date": ["2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06"],
+            "Description": ["sales", "supplier", "rent", "emi", "owner", "unknown"],
+            "Debit (INR)": [0, 4000, 3000, 1500, 500, 0],
+            "Credit (INR)": [10000, 0, 0, 0, 0, 200],
+            "Category": [
+                "Sales / customer receipts", "Supplier / inventory", "Rent",
+                "Loan / EMI", "Owner drawings", "Uncategorised"
+            ],
+        })
+        draft = build_monthly_reconciliation(frame, "2026-10")
+        self.assertEqual(10000, draft["revenue"])
+        self.assertEqual(4000, draft["cost_of_goods_sold"])
+        self.assertEqual(3000, draft["operating_expenses"])
+        self.assertEqual(500, draft["owner_drawings"])
+        self.assertEqual(1500, draft["existing_debt_service"])
+        self.assertEqual(1, draft["uncategorised_count"])
+
+    def test_monthly_reconciliation_rejects_month_without_transactions(self):
+        frame = pd.DataFrame({
+            "Date": ["2026-10-01"], "Debit (INR)": [0], "Credit (INR)": [10],
+            "Category": ["Sales / customer receipts"],
+        })
+        with self.assertRaises(ValueError):
+            build_monthly_reconciliation(frame, "2026-11")
 
 if __name__ == "__main__":
     unittest.main()
