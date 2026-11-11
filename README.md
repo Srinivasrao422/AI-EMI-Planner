@@ -31,6 +31,27 @@ Risk outputs are decision-support indicators, not a bank credit decision or loan
 .\.venv\Scripts\streamlit.exe run app.py
 ```
 
+## Configure Groq AI Assistant
+
+1. Create a Groq API key at https://console.groq.com/keys.
+2. In the project root, copy `.env.example` to `.env`.
+3. Open `.env` and replace the placeholder with your own key:
+
+```dotenv
+GROQ_API_KEY=gsk_your_actual_key_here
+```
+
+4. Restart Streamlit after saving the file.
+
+The application also supports Streamlit secrets. For local use, copy
+`.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and set
+`GROQ_API_KEY = "your-key"`. On Streamlit Community Cloud, add
+`GROQ_API_KEY` under the app's **Settings → Secrets**.
+
+**Security:** Never paste your key into chat, commit it to Git, add it to
+screenshots, or place it in Python source code. The real `.env` and
+`.streamlit/secrets.toml` files must remain local/private.
+
 ## Verify
 
 ```powershell
