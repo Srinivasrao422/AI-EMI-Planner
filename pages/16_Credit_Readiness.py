@@ -133,7 +133,7 @@ if require_login():
     st.caption("The PDF contains the figures and findings shown above. It does not add an AI-generated score or make a lending decision.")
     try:
         report_bytes = build_credit_readiness_pdf(
-            options[selected].__str__() and selected.split(" — ")[0],
+            selected.split(" — ")[0],
             result,
         )
         st.download_button(
@@ -148,9 +148,6 @@ if require_login():
         st.error("The report could not be generated from this assessment: " + str(error))
 
     st.caption(
-        "For planning and information only. Confirm records and consult a qualified "
-        "financial professional or lender before making borrowing decisions."
-    )    st.caption(
         "For planning and information only. Confirm records and consult a qualified "
         "financial professional or lender before making borrowing decisions."
     )
