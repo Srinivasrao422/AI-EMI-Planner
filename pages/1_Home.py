@@ -45,11 +45,13 @@ if require_login():
     )
     
     # CTA Buttons Row
-    cta_col1, cta_col2, _ = st.columns([1, 1, 4])
+    cta_col1, cta_col2, cta_col3, _ = st.columns([1, 1, 1.4, 2.6])
     with cta_col1:
         st.page_link("pages/2_EMI_Calculator.py", label="Calculate EMI", use_container_width=True)
     with cta_col2:
         st.page_link("pages/8_History.py", label="View History", use_container_width=True)
+    with cta_col3:
+        st.page_link("pages/9_Business_Profile.py", label="Business Profiles", use_container_width=True)
 
     st.write("")
     st.write("")
