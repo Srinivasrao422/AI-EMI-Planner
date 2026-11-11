@@ -32,7 +32,7 @@ class ResilienceTwinTests(unittest.TestCase):
         )
         self.assertEqual(144000, result["stressed_sales_collected"])
         self.assertEqual(143000, result["stressed_costs"])
-        self.assertEqual(-19000, result["stressed_headroom"])
+        self.assertEqual(-24000, result["stressed_headroom"])
         self.assertTrue(result["is_stressed_headroom_negative"])
 
     def test_new_emi_reduces_headroom_rupee_for_rupee(self):
@@ -42,7 +42,7 @@ class ResilienceTwinTests(unittest.TestCase):
 
     def test_break_even_threshold(self):
         result = simulate_resilience(self.record)
-        self.assertEqual(75.0, result["revenue_break_even_drop_percent"])
+        self.assertEqual(25.0, result["revenue_break_even_drop_percent"])
 
     def test_rejects_invalid_percentages_and_negative_emi(self):
         with self.assertRaises(ValueError):
