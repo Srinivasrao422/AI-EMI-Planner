@@ -14,6 +14,7 @@ import streamlit as st
 from components.theme import load_theme
 from core.ai_engine import ask_ai_advisor, get_groq_client
 from core.financial_health import analyze_financial_health
+from core.financial_intelligence import analyze_business_trends
 from database.business_profiles import get_user_business_profiles
 from database.financial_records import get_business_financial_records
 from database.loan_history import get_latest_loan
@@ -112,6 +113,48 @@ if require_login():
             cols[1].metric("Latest month", health["period_month"])
             cols[2].metric("Operating surplus", f"₹{health['operating_surplus']:,.0f}")
             cols[3].metric("Cash headroom", f"₹{health['cash_headroom']:,.0f}")
+
+            # Deterministic insights are calculated locally from the saved records.
+            # The language model is not asked to invent or calculate these findings.
+            trend = analyze_business_trends(records[:2])
+            data["msme_context"]["financial_trend"] = {
+                "latest_month": trend["latest_month"],
+                "previous_month": trend["previous_month"],
+                "cash_headroom_change": trend["cash_headroom_change"],
+                "findings": trend["findings"],
+                "recommendations": trend["recommendations"],
+                "limitations": trend["limitations"],
+            }
+            st.divider()
+            st.subheader("Evidence-based financial insights")
+            st.caption("Calculated from your two latest saved months. No AI-generated score or forecast.")
+            for finding in trend["findings"]:
+                if finding["severity"] == "high":
+                    st.error(finding["text"])
+                elif finding["severity"] == "attention":
+                    st.warning(finding["text"])
+                elif finding["severity"] == "positive":
+                    st.success(finding["text"])
+                else:
+                    st.info(finding["text"])
+                st.caption("Evidence: " + ", ".join(finding["evidence"]))
+            st.markdown("**Suggested actions**")
+            for item in trend["recommendations"]:
+                st.write(f"• {item}")
+            with st.expander("How these insights are calculated"):
+                if trend["changes"]:
+                    st.dataframe(
+                        [{
+                            "Indicator": item["label"],
+                            "Previous month": item["previous_month"],
+                            "Latest month": item["latest_month"],
+                            "Change (₹)": item["change_amount"],
+                            "Change (%)": item["change_percent"] if item["change_percent"] is not None else "Not available",
+                        } for item in trend["changes"]],
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                st.caption(trend["limitations"])
         else:
             st.info("No monthly financial records exist for this business yet. The assistant will not assume business figures.")
     else:
