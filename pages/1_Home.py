@@ -53,6 +53,8 @@ if require_login():
     with cta_col3:
         st.page_link("pages/9_Business_Profile.py", label="Business Profiles", use_container_width=True)
 
+    st.page_link("pages/10_Financial_Records.py", label="Record Monthly Business Finances", use_container_width=True)
+
     st.write("")
     st.write("")
 
@@ -77,6 +79,9 @@ if require_login():
         with st.container(border=True):
             st.markdown("**Business Profile Management**")
             st.caption("Create and manage multiple MSME business profiles under your account.")
+    with st.container(border=True):
+        st.markdown("**Monthly Financial Records**")
+        st.caption("Capture revenue, direct costs, operating expenses, owner drawings and existing debt payments by month.")
 
     st.divider()
 
