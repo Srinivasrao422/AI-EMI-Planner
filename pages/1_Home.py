@@ -54,6 +54,7 @@ if require_login():
         st.page_link("pages/9_Business_Profile.py", label="Business Profiles", use_container_width=True)
 
     st.page_link("pages/10_Financial_Records.py", label="Record Monthly Business Finances", use_container_width=True)
+    st.page_link("pages/11_Financial_Health.py", label="Analyze MSME Financial Health", use_container_width=True)
 
     st.write("")
     st.write("")
