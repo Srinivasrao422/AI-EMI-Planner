@@ -120,6 +120,7 @@ def render_custom_sidebar():
             st.page_link("pages/8_History.py", label="Loan History")
             st.page_link("pages/9_Business_Profile.py", label="MSME Business Profiles")
             st.page_link("pages/10_Financial_Records.py", label="Monthly Financial Records")
+            st.page_link("pages/11_Financial_Health.py", label="MSME Financial Health")
             
             st.divider()
             
